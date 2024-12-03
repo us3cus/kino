@@ -15,7 +15,7 @@
               </li>
               </ul>
               <div class="ms-auto d-flex">
-              <button class="btn btn-outline me-2" type="button">Log In</button>
+                <button class="btn btn-outline me-2 text-decoration-none" type="button"><NuxtLink to="/signup">Log in</NuxtLink></button>
               <button class="btn btn-sm btn-outline" type="button">Sign Up</button>
             </div>
           </div>
@@ -29,7 +29,7 @@
 
     <footer class="bg-dark text-white p-3 mt-3">
       <div class="container text-center">
-        <p class="lead"> &copy;мотя 2024</p>
+        <p class="lead"> &copy;Copyright</p>
       </div>
     </footer>
   </div>
@@ -37,4 +37,6 @@
 
 <script setup lang="ts">
 
+
+import router from "#app/plugins/router";
 </script>

@@ -2,6 +2,7 @@
 import {useFilmStore} from "~/stores/film";
 import {useCategoryStore} from "~/stores/category";
 import {useCountryStore} from "~/stores/country";
+import About from "~/pages/about.vue";
 
 const categoryStore = useCategoryStore();
 const filmStore = useFilmStore()
@@ -30,9 +31,11 @@ const goto = (page: number) => {
     filmStore.fetchFilms();
   }
 }
+
 </script>
 
 <template>
+
   <div class="row mt-2">
     <div class="col-md-4">
       <select v-model="category" @change="filter" class="form-select" aria-label="Default select example">
