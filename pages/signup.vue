@@ -16,6 +16,7 @@ const register = async () => {
       fio: fio.value,
       email: email.value,
       password: password.value,
+      birthday: birthday.value,
       gender_id: gender.value,
         },
     );
@@ -37,7 +38,7 @@ const register = async () => {
         <h1>Registration</h1>
         <div class="mb-3">
           <label for="fio" class="form-label">FIO</label>
-          <input type="text" class="form-control" id="fio" placeholder="Ivanov Ivan Ivanovich">
+          <input v-model="fio" type="text" class="form-control" id="fio" placeholder="Ivanov Ivan Ivanovich">
         </div>
         <div class="mb-3">
           <label for="email" class="form-label">E-Mail</label>
