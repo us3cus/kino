@@ -63,13 +63,24 @@ export const useAuthStore = defineStore("auth", () => {
       console.error("Ошибка при загрузке данных пользователя:", error);
     }
   };
-
   // Инициализация: читаем данные из cookie при загрузке приложения
   readAuthData();
+
+  const logout = () => {
+    try {
+      // Очищаем данные из хранилищ
+      authData.value = null
+      authToken.value = null
+
+    } catch (error) {
+      console.error("Ошибка при выходе из учетной записи:", error);
+    }
+  };
 
   return {
     authData,
     authToken,
+    logout,
     signin,
     signup,
     fetchUserData,

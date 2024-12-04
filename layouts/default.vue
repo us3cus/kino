@@ -30,7 +30,7 @@
             </ul>
             <div class="ms-auto d-flex">
               <!-- Кнопки для неавторизованных пользователей -->
-              <div v-if="!userData || !userData.fio">
+              <div v-if="!userData">
                 <button
                     @click="router.push('signin')"
                     class="btn btn-outline me-2 text-decoration-none"
@@ -49,8 +49,13 @@
 
               <!-- Кнопка с именем пользователя для авторизованных пользователей -->
               <div v-else>
-                <button class="btn btn-sm btn-outline" type="button">
+                <button @click="router.push('/myprofile')"
+                    class="btn btn-sm btn-outline" type="button">
                   {{ userData.fio }}
+                </button>
+                <button @click="handleLogout"
+                        class="btn btn-sm btn-outline" type="button">
+                  sign out
                 </button>
               </div>
             </div>
@@ -85,8 +90,14 @@ const userStore = useUserStore();
 const { authData, authToken } = storeToRefs(authStore);
 const { userData } = storeToRefs(userStore);
 
+const handleLogout = () => {
+  authStore.logout(); // Вызываем функцию выхода
+  userStore.userData = null;
+  router.push('/');
+};
+
 // Загружаем данные пользователя при наличии токена
-onMounted(async () => {
+
   if (authToken.value && authData.value?.id) {
     try {
       userStore.setAuthToken(authToken.value); // Устанавливаем токен в userStore
@@ -95,5 +106,4 @@ onMounted(async () => {
       console.error("Ошибка загрузки данных пользователя:", error);
     }
   }
-});
 </script>
