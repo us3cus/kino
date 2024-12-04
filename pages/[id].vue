@@ -3,6 +3,7 @@ import { ref, onMounted } from "vue";
 import { useRoute } from "#vue-router";
 import { api } from "~/api";
 import { useAuthStore } from "~/stores/auth";
+import { defineComponent } from "vue";
 
 const film = ref(null); // Хранение данных фильма
 const errorMessage = ref(null); // Сообщение об ошибке
@@ -14,6 +15,11 @@ const newReviewMessage = ref(""); // Текст нового отзыва
 const authStore = useAuthStore(); // Доступ к ID пользователя и токену
 const route = useRoute(); // Доступ к параметрам маршрута
 
+/////////////////////
+import RatingStars from "~/components/RatingStars.vue";
+const userId = ref(authStore.authData?.id || 0); // Получаем ID пользователя из authStore
+const filmId = ref(Number(route.params.id) || 0); // ID фильма из маршрута
+////////////////////
 
 const fetchFilm = async () => {
   try {
@@ -104,6 +110,9 @@ onMounted(() => {
   fetchFilm();
   fetchReviews();
 });
+
+
+
 </script>
 
 <template>
@@ -162,6 +171,11 @@ onMounted(() => {
     
         <!-- Отзывы -->
         <div v-else>
+          <div>
+            <div>
+              <h1>Оцените фильм</h1>
+              <RatingStars :userId="userId" :filmId="filmId" />
+            </div>
           <div class="row">
             <div class="col-md-10">
               <label for="reviewTextarea" class="form-label">Add review</label>
@@ -203,6 +217,7 @@ onMounted(() => {
           </div>
         </div>
       </div>
+    </div>
     </div>
     </div>
 </template>
