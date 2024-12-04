@@ -3,6 +3,9 @@ import {useFilmStore} from "~/stores/film";
 import {useCategoryStore} from "~/stores/category";
 import {useCountryStore} from "~/stores/country";
 import About from "~/pages/about.vue";
+import { useRouter } from "#vue-router";
+
+const router = useRouter();
 
 const categoryStore = useCategoryStore();
 const filmStore = useFilmStore()
@@ -85,7 +88,8 @@ const goto = (page: number) => {
             </template>
           </p>
         </div>
-        <button type="button" class="btn btn-success">Add</button>
+        <button @click="router.push(`/${film.id}`)"
+         type="button" class="btn btn-success">Watch</button>
       </div>
     </div>
   </div>

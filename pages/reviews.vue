@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref, onMounted } from "vue";
 import { api } from "~/api"; // Убедитесь, что ваш API настроен
 import { useAuthStore } from "~/stores/auth";
 
@@ -21,14 +21,14 @@ const fetchReviews = async () => {
       throw new Error("ID пользователя отсутствует. Попробуйте войти снова.");
     }
 
-    const response = await api.get(`/api/v1/users/${userId}/reviews`, {
+    const response = await api.get(`/users/${userId}/reviews`, {
       headers: {
         Authorization: `Bearer ${authStore.authToken}`, // Токен авторизации
       },
     });
 
     if (response.status === 200) {
-      reviews.value = response.data.reviews; // Сохраняем отзывы
+      reviews.value = response.data.reviews || []; // Сохраняем отзывы, проверяя наличие данных
     }
   } catch (error) {
     console.error("Ошибка при загрузке отзывов:", error.response || error);
@@ -54,7 +54,7 @@ const deleteReview = async (reviewId) => {
       throw new Error("ID пользователя отсутствует. Попробуйте войти снова.");
     }
 
-    await api.delete(`/api/v1/users/${userId}/reviews/${reviewId}`, {
+    await api.delete(`/users/${userId}/reviews/${reviewId}`, {
       headers: {
         Authorization: `Bearer ${authStore.authToken}`, // Токен авторизации
       },
@@ -67,13 +67,19 @@ const deleteReview = async (reviewId) => {
     console.error("Ошибка при удалении отзыва:", error.response || error);
 
     if (error.response?.status === 404) {
-      errorMessage.value = error.response.data.message;
+      errorMessage.value = error.response.data.message || "Отзыв не найден.";
     } else {
       errorMessage.value = "Произошла ошибка при удалении отзыва. Попробуйте позже.";
     }
   }
 };
+
+// Загружаем отзывы при монтировании компонента
+onMounted(() => {
+  fetchReviews();
+});
 </script>
+
 <template>
   <div>
     <h1>My Reviews</h1>
@@ -87,7 +93,7 @@ const deleteReview = async (reviewId) => {
     <!-- Отображение отзывов -->
     <ul v-else>
       <li v-for="review in reviews" :key="review.id" class="mb-3">
-        <h4>{{ review.film.name }}</h4>
+        <h4>{{ review.film?.name || "Unknown Film" }}</h4>
         <p>{{ review.message }}</p>
         <p><strong>Approved:</strong> {{ review.is_approved ? "Yes" : "No" }}</p>
         <p><strong>Date:</strong> {{ new Date(review.created_at).toLocaleDateString() }}</p>
