@@ -1,13 +1,13 @@
 <template>
   <div class="rating">
     <span
-      v-for="star in stars"
-      :key="star"
-      class="star"
-      :class="{ active: star <= hoverIndex, selected: star <= rating }"
-      @mouseover="setHover(star)"
-      @mouseleave="resetHover"
-      @click="handleRating(star)"
+        v-for="star in stars"
+        :key="star"
+        class="star"
+        :class="{ active: star <= hoverIndex, selected: star <= rating }"
+        @mouseover="setHover(star)"
+        @mouseleave="resetHover"
+        @click="handleRating(star)"
     >
       ★
     </span>
@@ -17,9 +17,15 @@
   </div>
 </template>
 
+
 <script setup lang="ts">
 import { ref } from "vue";
-import { useFetch, useRoute } from "#app";
+import { api } from "~/api"; // Убедитесь, что axios настроен корректно
+import { useUserStore } from "~/stores/user";
+import { useAuthStore } from "~/stores/auth";
+
+const authStore = useAuthStore(); // Доступ к ID пользователя и токену
+const userStore = useUserStore(); // Доступ к данным пользователя
 
 const props = defineProps({
   userId: {
@@ -33,46 +39,50 @@ const props = defineProps({
 });
 
 const stars = [1, 2, 3, 4, 5];
-const rating = ref(0);
-const hoverIndex = ref(0);
-const responseMessage = ref("");
-const isSuccess = ref(false);
+const rating = ref(0); // Текущий рейтинг
+const hoverIndex = ref(0); // Индекс текущей наведённой звезды
+const responseMessage = ref(""); // Сообщение об ответе
+const isSuccess = ref(false); // Флаг успешности
 
 const setHover = (index: number) => {
-  hoverIndex.value = index;
+  hoverIndex.value = index; // Устанавливаем индекс при наведении
 };
 
 const resetHover = () => {
-  hoverIndex.value = 0;
+  hoverIndex.value = 0; // Сбрасываем индекс при снятии курсора
 };
 
 const handleRating = async (index: number) => {
-  rating.value = index;
+  rating.value = index; // Устанавливаем выбранный рейтинг
 
   try {
-    const response = await $fetch(`/users/${props.userId}/ratings`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: {
-        film_id: props.filmId,
-        ball: rating.value,
-      },
-    });
+    // Отправка POST-запроса с помощью axios
+    const response = await api.post(
+        `/users/${userStore.userData?.id}/ratings`,
+        {
+          film_id: props.filmId,
+          ball: rating.value,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${authStore.authToken}`, // Токен пользователя
+          },
+        }
+    );
 
-    if (response?.status === 201) {
-      responseMessage.value = `Рейтинг успешно добавлен: ${response.score} для фильма "${response.film.name}"`;
+    if (response.status === 201) {
+      responseMessage.value = `Рейтинг успешно добавлен: ${rating.value}`;
       isSuccess.value = true;
     } else {
-      throw new Error(response?.message || "Ошибка при добавлении рейтинга.");
+      throw new Error("Ошибка при добавлении рейтинга.");
     }
   } catch (error: any) {
-    responseMessage.value = error.message || "Ошибка при добавлении рейтинга.";
+    responseMessage.value = error.response?.data?.message || "Ошибка при добавлении рейтинга.";
     isSuccess.value = false;
   }
 };
 </script>
+
 
 <style scoped>
 .rating {
